@@ -40,7 +40,7 @@ except ImportError:
 
 def html(returns, benchmark=None, rf=0.,
          grayscale=False, title='Strategy Tearsheet',
-         output=None, compounded=True, rolling_period=126,
+         output=None, compounded=True, rolling_period=183,
          download_filename='quantstats-tearsheet.html'):
 
     if output is None and not _utils._in_notebook():
@@ -486,7 +486,7 @@ def metrics(returns, benchmark=None, rf=0., display=True,
 
 def plots(returns, benchmark=None, grayscale=False,
           figsize=(8, 5), mode='basic', compounded=True,
-          rolling_period=126):
+          rolling_period=183):
 
     if mode.lower() != 'full':
         _plots.snapshot(returns, grayscale=grayscale,

@@ -87,6 +87,7 @@ def plot_returns_bars(returns, benchmark=None,
     colors, _, _ = _get_colors(grayscale)
     df = _pd.DataFrame(index=returns.index, data={returns_label: returns})
     if isinstance(benchmark, _pd.Series):
+        benchmark = _utils.group_returns(benchmark, benchmark.index.year, True)
         df['Benchmark'] = benchmark[benchmark.index.isin(returns.index)]
         df = df[['Benchmark', returns_label]]
 
@@ -490,7 +491,7 @@ def plot_rolling_stats(returns, benchmark=None, title="",
 
 
 def plot_rolling_beta(returns, benchmark,
-                      window1=126, window1_label="",
+                      window1=183, window1_label="",
                       window2=None, window2_label="",
                       title="", hlcolor="red", figsize=(10, 6),
                       grayscale=False, fontname="Arial", lw=1.5,
