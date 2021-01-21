@@ -51,6 +51,7 @@ def html(returns, benchmark=None, rf=0.,
         tpl = f.read()
         f.close()
 
+    tpl = tpl.replace('{{now}}', str(_dt.now().replace(microsecond=0)))
     date_range = returns.index.strftime('%e %b, %Y')
     tpl = tpl.replace('{{date_range}}', date_range[0] + ' - ' + date_range[-1])
     tpl = tpl.replace('{{title}}', title)
