@@ -41,7 +41,7 @@ except ImportError:
 def html(returns, benchmark=None, rf=0.,
          grayscale=False, title='Strategy Tearsheet',
          output=None, compounded=True, rolling_period=183,
-         download_filename='quantstats-tearsheet.html'):
+         download_filename='quantstats-tearsheet.html', description=None):
 
     if output is None and not _utils._in_notebook():
         raise ValueError("`file` must be specified")
@@ -55,6 +55,8 @@ def html(returns, benchmark=None, rf=0.,
     tpl = tpl.replace('{{date_range}}', date_range[0] + ' - ' + date_range[-1])
     tpl = tpl.replace('{{title}}', title)
     tpl = tpl.replace('{{v}}', __version__)
+    if description is not None:
+        tpl = tpl.replace('{{description}}', description)
 
     mtrx = metrics(returns=returns, benchmark=benchmark,
                    rf=rf, display=False, mode='full',
