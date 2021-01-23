@@ -41,7 +41,8 @@ except ImportError:
 def html(returns, benchmark=None, rf=0.,
          grayscale=False, title='Strategy Tearsheet',
          output=None, compounded=True, rolling_period=183,
-         download_filename='quantstats-tearsheet.html', description=None):
+         download_filename='quantstats-tearsheet.html', description=None,
+         round_trip=None, additional_metrics=None):
 
     if output is None and not _utils._in_notebook():
         raise ValueError("`file` must be specified")
@@ -62,7 +63,7 @@ def html(returns, benchmark=None, rf=0.,
     mtrx = metrics(returns=returns, benchmark=benchmark,
                    rf=rf, display=False, mode='full',
                    sep=True, internal="True",
-                   compounded=compounded)[2:]
+                   compounded=compounded, additional_metrics=additional_metrics)[2:]
     mtrx.index.name = 'Metric'
     tpl = tpl.replace('{{metrics}}', _html_table(mtrx))
     tpl = tpl.replace('<tr><td></td><td></td><td></td></tr>',
@@ -97,6 +98,12 @@ def html(returns, benchmark=None, rf=0.,
     dd_info = dd_info[['start', 'end', 'max drawdown', 'days']]
     dd_info.columns = ['Started', 'Recovered', 'Drawdown', 'Days']
     tpl = tpl.replace('{{dd_info}}', _html_table(dd_info, False))
+    if round_trip is not None:
+        tpl = tpl.replace('{{round_trip}}', _html_table(round_trip, False))
+        tpl = tpl.replace('<tr><td></td><td></td><td></td></tr>',
+                          '<tr><td colspan="3"><hr></td></tr>')
+        tpl = tpl.replace('<tr><td></td><td></td></tr>',
+                          '<tr><td colspan="2"><hr></td></tr>')
 
     # plots
     figfile = _utils._file_stream()
@@ -276,7 +283,8 @@ def basic(returns, benchmark=None, rf=0., grayscale=False,
 
 
 def metrics(returns, benchmark=None, rf=0., display=True,
-            mode='basic', sep=False, compounded=True, **kwargs):
+            mode='basic', sep=False, compounded=True,
+            additional_metrics=None, **kwargs):
 
     if isinstance(returns, _pd.DataFrame) and len(returns.columns) > 1:
         raise ValueError("`returns` must be a pandas Series, "
@@ -336,6 +344,9 @@ def metrics(returns, benchmark=None, rf=0., display=True,
     metrics['CAGR%%'] = _stats.cagr(df, rf, compounded) * pct
     metrics['Sharpe'] = _stats.sharpe(df, rf)
     metrics['Sortino'] = _stats.sortino(df, rf)
+    if additional_metrics:
+        for k, v in additional_metrics.items():
+            metrics[k] = [v, _np.nan]
     metrics['Max Drawdown %'] = blank
     metrics['Longest DD Days'] = blank
 
